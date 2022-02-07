@@ -23,6 +23,7 @@ TODO:
 - [ ] Optimizations!
 - [ ] Add Windows support (create test.bat, test on MinGW)
 - [ ] Add correctness check to translator (same amount of "[" and "]")
+- [ ] More tests on nested interpretators
 
 BFC-9000 ignores any symbols instead brainfuck symbols. Encoding is ASCII.
 
