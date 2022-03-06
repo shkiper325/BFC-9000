@@ -19,7 +19,8 @@ To compile resulting code with gcc, use
 Pipeline sample is shown in test.sh. For demonstration put some brainfuck code to file "code.bf" and run "sh test.sh".
 
 TODO:
-- [ ] Fix thing, marked in code
+- [X] Fix thing, marked in code
+- [ ] Switch to C++
 - [ ] Optimizations!
 - [ ] Add Windows support (create test.bat, test on MinGW)
 - [ ] Add correctness check to translator (same amount of "[" and "]")
