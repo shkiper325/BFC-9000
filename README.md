@@ -18,9 +18,10 @@ To compile resulting code with gcc, use
 
 Pipeline sample is shown in test.sh. For demonstration put some brainfuck code to file "code.bf" and run "sh test.sh".
 
+From v0.1.1 gcc is replaced with clang
+
 TODO:
 - [X] Fix thing, marked in code
-- [ ] Switch to C++
 - [ ] Optimizations!
 - [ ] Add Windows support (create test.bat, test on MinGW)
 - [ ] Add correctness check to translator (same amount of "[" and "]")
@@ -29,4 +30,5 @@ TODO:
 BFC-9000 ignores any symbols instead brainfuck symbols. Encoding is ASCII.
 
 Version history:
-- v0.1: Raw script provided. 
+- v0.1: Raw script provided.
+- v0.1.1: Testing '+' sum optimization

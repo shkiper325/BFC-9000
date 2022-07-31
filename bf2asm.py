@@ -1,4 +1,6 @@
 import argparse
+from pickletools import read_unicodestringnl
+from tkinter.messagebox import RETRY
 
 MEMORY_SIZE = 30000
 CHARACTERS = ('>', '<', '+', '-', '.', ',', '[', ']')
@@ -28,7 +30,7 @@ def parse_cmd_and_load():
     if args.bf_code == '':
         while True:
             bf_code = bf_code + input()
-            if bf_code[-2:] == '!\n' or bf_code[-1] == '!':
+            if bf_code[-2:] == '!\n':
                 break
     else:
         fd = open(args.bf_code, 'r')
@@ -52,46 +54,72 @@ def get_point():
     POINTS += 1
     return ret
 
-def find_first_close_bracket(text):
-    counter = 0
-    i = 0
+def find_first_close_bracket(text, start):
+    depth = 0
+    i = start
 
     while True:
         if i >= len(text):
-            print('Error: bad brackets')
+            print('Error: code with bad brackets is given to find_first_close_bracket()')
             quit(1)
 
         if text[i] == '[':
-            counter += 1
+            depth += 1
         elif text[i] == ']':
-            if counter == 1:
+            if depth == 1:
                 return i
             else:
-                counter -= 1
+                depth -= 1
 
-        i += 1    
+        i += 1
+
+def get_power(code, ch, start):
+    power = 0
+    for i in range(start, len(code)):
+        if code[i] == ch:
+            power += 1
+        else:
+            break
+     
+    return power
+
+def parse_bf_code(code): # Remove non-bf symbols and optimize >, <, +, -
+    ret = []
+
+    i = 0
+    while i < len(code):
+        ch = code[i]
+
+        if ch in ['[', ']', '.', ',', '-', '>', '<']:
+            ret.append((ch, None))
+            i += 1 
+        elif ch in ['+']:
+            power = get_power(code, ch, i)
+            ret.append((ch, power))
+            i += power
+        else:
+            print('Error: non-brainfuck symbol found in code in parse_bf_code()')
+            quit(1)
+
+    return ret
 
 def main():
     bf_code, out_filename = parse_cmd_and_load()
+    bf_code = parse_bf_code(bf_code)
 
     open_brackets = []
     close_brackets = []
 
     for i in range(len(bf_code)):
-        ch = bf_code[i]
+        ch, val = bf_code[i]
         if ch == '+':
+            val %= 256
+
             RESULT.append('movl $memory, %ebx')
             RESULT.append('addl (head_pos), %ebx')
+            RESULT.append('movw $0, %ax')
             RESULT.append('movb (%ebx), %al')
-            RESULT.append('cmp $255, %al')
-            point_overflow = get_point()
-            point_end = get_point()
-            RESULT.append('je ' + point_overflow)
-            RESULT.append('incb %al')
-            RESULT.append('jmp ' + point_end)
-            RESULT.append(point_overflow + ':')
-            RESULT.append('movb $0, %al')
-            RESULT.append(point_end + ':')
+            RESULT.append('addw $' +  str(val) + ', %ax')
             RESULT.append('movb %al, (%ebx)')
         elif ch == '-':
             RESULT.append('movl $memory, %ebx')
